@@ -1,1 +1,1 @@
-SNAKE
+My take on the famous Snake Game using SDL2 and C++.
