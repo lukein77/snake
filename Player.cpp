@@ -5,10 +5,10 @@ Player::Player() {
     head->y = 10;
 }
 
-void Player::update(unsigned char map[MAP_WIDTH][MAP_HEIGHT]) {
+void Player::update(Map *map) {
     // update map tiles for the head and tail, no need to update the rest of the body
     position_t tail = body[length-1];
-    map[tail.x][tail.y] = MAP_EMPTY;
+    map->setTile(tail.x, tail.y, MAP_EMPTY);
     
     // first move the body
     for (int i = length-1; i > 0; i--) {
@@ -37,11 +37,12 @@ void Player::update(unsigned char map[MAP_WIDTH][MAP_HEIGHT]) {
             break;
     }
     // now check if the movement was actually valid
-    if (map[head->x][head->y] == MAP_EMPTY) {
-        map[head->x][head->y] = MAP_SNAKE;
-    } else if (map[head->x][head->y] == MAP_FOOD) {
+    if (map->getTile(head->x, head->y) == MAP_EMPTY) {
+        map->setTile(head->x, head->y, MAP_SNAKE);
+    } else if (map->getTile(head->x, head->y) == MAP_FOOD) {
         grow();
-        map[head->x][head->y] = MAP_SNAKE;
+        map->setTile(head->x, head->y, MAP_SNAKE);
+        map->putFood();
     }
 }
 
@@ -55,9 +56,12 @@ void Player::grow() {
 }
 
 void Player::setDirection(const int dir) {
-    if ((direction + 2) % 4 == dir) {
-        // if the player changes to the opposite direction, then swap the head with the tail
-        *head = body[length-1];
+    if ((direction + 2) % 4 != dir) {
+        direction = dir;
+        /* this doesn't work
+        for (int i = 0; i < length/2; i++) {
+            std::swap(*head, body[length-i-1]);
+        }
+        */
     }
-    direction = dir;
 }

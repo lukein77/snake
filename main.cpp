@@ -1,15 +1,13 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <time.h>
 #include "defs.h"
 #include "Player.h"
-
+#include "Map.h"
 
 
 SDL_Renderer *renderer;
 SDL_Window *window;
 
-uint8_t map[40][30] = {0};
 
 bool initSDL() {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -44,21 +42,17 @@ bool initSDL() {
 int main(int argc, char *argv[]) {
 
     bool running = false;
-    Player player;
+
     if (initSDL()) {
         running = true;
     }
     
+    Player player;
+    Map map;
     SDL_Event event;
 
-    // throw some food
-    srand(time(NULL));
-    for (int i = 0; i < 10; i++) {
-        int x = rand() % MAP_WIDTH;
-        int y = rand() % MAP_HEIGHT;
-        map[x][y] = MAP_FOOD;
-    }
-    map[player.getX()][player.getY()] = MAP_SNAKE;
+    map.setTile(player.getX(), player.getY(), MAP_SNAKE);
+    map.putFood();
 
     long playerUpdateTime = SDL_GetTicks();
     long drawTime = SDL_GetTicks();
@@ -99,8 +93,8 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        if (SDL_GetTicks() - playerUpdateTime == 300) {
-            player.update(map);
+        if (SDL_GetTicks() - playerUpdateTime == 250) {
+            player.update(&map);
             playerUpdateTime = SDL_GetTicks();
         }
 
@@ -110,18 +104,19 @@ int main(int argc, char *argv[]) {
             // drawing
             SDL_RenderClear(renderer);
 
-           // draw the map
+            // draw the map
             SDL_Rect r;
             r.w = TILE_SIZE;
             r.h = TILE_SIZE;
             for (int i = 0; i < MAP_WIDTH; i++) {
                 for (int j = 0; j < MAP_HEIGHT; j++) {
-                    if (map[i][j] != MAP_EMPTY) {
+                    MapTile tile = map.getTile(i, j);
+                    if (tile != MAP_EMPTY) {
                         r.x = i * TILE_SIZE;
                         r.y = j * TILE_SIZE;
-                        if (map[i][j] == MAP_SNAKE) {
+                        if (tile == MAP_SNAKE) {
                             SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0x00);
-                        } else if (map[i][j] == MAP_FOOD) {
+                        } else if (tile == MAP_FOOD) {
                             SDL_SetRenderDrawColor(renderer, 0x00, 0xFF, 0x00, 0x00);
                         }
                         SDL_RenderFillRect(renderer, &r);

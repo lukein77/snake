@@ -3,6 +3,7 @@
 
 #include "SDL2/SDL.h"
 #include "defs.h"
+#include "Map.h"
 
 class Player {
     private:
@@ -11,7 +12,7 @@ class Player {
         
         position_t body[MAX_LENGTH] = {0,0};
         position_t *head = body;
-        int length = 1;
+        int length = 3;
         int direction=0;
         SDL_Texture *texture;
     public:
@@ -24,7 +25,7 @@ class Player {
         void setX(const int x) { this->x = x; }
         void setY(const int y) { this->y = y; }
         void setDirection(const int dir);
-        void update(unsigned char map[MAP_WIDTH][MAP_HEIGHT]);
+        void update(Map *map);
         void grow();
 };
 
