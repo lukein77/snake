@@ -1,50 +1,21 @@
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include "defs.h"
 #include "Player.h"
 #include "Map.h"
+#include "Draw.h"
+#include <string>
 
-
-SDL_Renderer *renderer;
-SDL_Window *window;
-
-
-bool initSDL() {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        printf("Couldn't initialize SDL: %s\n", SDL_GetError());
-        return false;
-    }
-
-    window = SDL_CreateWindow("Snake", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-    if (!window) {
-        printf("Failed to open window: %s\n", SDL_GetError());
-        return false;
-    }
-
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (!renderer) {
-        printf("Failed to create renderer: %s\n", SDL_GetError());
-        return false;
-    }
-
-    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
-    
-    if (!IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG)) {
-		printf("Failed to initialize SDL_image: %s\n", IMG_GetError());
-		return false;
-	}
-
-    return true;
-}
+Draw drawingManager;
 
 int main(int argc, char *argv[]) {
 
     bool running = false;
 
-    if (initSDL()) {
+    if (drawingManager.initialize()) {
         running = true;
+    } else {
+        return 1;
     }
     
     Player player;
@@ -103,52 +74,41 @@ int main(int argc, char *argv[]) {
                 }
             }
         } else {
-            if (player.getLives() > 0) {
-                if (SDL_GetTicks() - deadTime == 1500) {
+            if (SDL_GetTicks() - deadTime == 1500) {
+                if (player.getLives() > 0) {
                     player.respawn(&map);
                     playerUpdateTime = SDL_GetTicks();
+                } else {
+                    running = false;
                 }
-            } else {
-                running = false;    // game over
             }
         }
 
         if (SDL_GetTicks() - drawTime == 50) {
-            
-            SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
-            // drawing
-            SDL_RenderClear(renderer);
+            SDL_Color white = {255, 255, 255, 255};
 
-            // draw the map
-            SDL_Rect r;
-            r.w = TILE_SIZE;
-            r.h = TILE_SIZE;
-            for (int i = 0; i < MAP_WIDTH; i++) {
-                for (int j = 0; j < MAP_HEIGHT; j++) {
-                    MapTile tile = map.getTile(i, j);
-                    if (tile != MAP_EMPTY) {
-                        r.x = i * TILE_SIZE;
-                        r.y = j * TILE_SIZE;
-                        if (tile == MAP_SNAKE) {
-                            SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0x00);
-                        } else if (tile == MAP_FOOD) {
-                            SDL_SetRenderDrawColor(renderer, 0x00, 0xFF, 0x00, 0x00);
-                        }
-                        SDL_RenderFillRect(renderer, &r);
-                    }
+            drawingManager.clearScene();
+
+            drawingManager.drawMap(&map);
+
+            if (!player.isAlive()) {
+                if (player.getLives() > 0) {
+                    drawingManager.renderText("YOU DIED", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 15, white, true);
+                    std::string lives = "LIVES: ";
+                    lives.push_back(player.getLives()+'0');
+                    drawingManager.renderText(lives.c_str(), SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15, white, true);
+                } else {
+                    drawingManager.renderText("GAME OVER", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, white, true);
                 }
             }
 
-            // render everything
-            SDL_RenderPresent(renderer);
-
+            drawingManager.renderScene();
             drawTime = SDL_GetTicks();
         }
 
     }
 
-    IMG_Quit();
-    SDL_DestroyRenderer(renderer);
+    
     SDL_Quit();
     return 0;
 }
