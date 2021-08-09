@@ -19,3 +19,12 @@ void Map::putFood() {
     } while (map[x][y] != MAP_EMPTY);
     map[x][y] = MAP_FOOD;
 }
+
+void Map::reset() {
+    for (int i = 0; i < MAP_WIDTH; i++) {
+        for (int j = 0; j < MAP_HEIGHT; j++) {
+            map[i][j] = MAP_EMPTY;
+        }
+    }
+    putFood();
+}

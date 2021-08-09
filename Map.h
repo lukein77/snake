@@ -12,6 +12,7 @@ class Map {
         MapTile getTile(const int x, const int y) { return map[x][y]; }
         bool setTile(int x, int y, MapTile val);
         void putFood();
+        void reset();
 };
 
 #endif

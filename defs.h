@@ -8,6 +8,8 @@
 #define MAP_WIDTH 40
 #define MAP_HEIGHT 30
 
+#define INITIAL_POS {10,10}
+#define INITIAL_LENGTH 3
 #define MAX_LENGTH 255
 
 enum MapTile {

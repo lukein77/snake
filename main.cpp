@@ -56,6 +56,7 @@ int main(int argc, char *argv[]) {
 
     long playerUpdateTime = SDL_GetTicks();
     long drawTime = SDL_GetTicks();
+    long deadTime = SDL_GetTicks();
 
     while (running) {
 
@@ -93,9 +94,23 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        if (SDL_GetTicks() - playerUpdateTime == 250) {
-            player.update(&map);
-            playerUpdateTime = SDL_GetTicks();
+        if (player.isAlive()) {
+            if (SDL_GetTicks() - playerUpdateTime == 250) {
+                player.update(&map);
+                playerUpdateTime = SDL_GetTicks();
+                if (!player.isAlive()) {
+                    deadTime = SDL_GetTicks();
+                }
+            }
+        } else {
+            if (player.getLives() > 0) {
+                if (SDL_GetTicks() - deadTime == 1500) {
+                    player.respawn(&map);
+                    playerUpdateTime = SDL_GetTicks();
+                }
+            } else {
+                running = false;    // game over
+            }
         }
 
         if (SDL_GetTicks() - drawTime == 50) {
