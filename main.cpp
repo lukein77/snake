@@ -3,10 +3,10 @@
 #include "defs.h"
 #include "Player.h"
 #include "Map.h"
-#include "Draw.h"
+#include "DrawingManager.h"
 #include <string>
 
-Draw drawingManager;
+DrawingManager drawingManager;
 
 int main(int argc, char *argv[]) {
 

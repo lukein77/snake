@@ -6,14 +6,14 @@
 #include <SDL2/SDL_ttf.h>
 #include "Map.h"
 
-class Draw {
+class DrawingManager {
     private:
         SDL_Renderer *renderer;
         SDL_Window *window;
         TTF_Font *font;
     public:
-        Draw();
-        ~Draw();
+        DrawingManager();
+        ~DrawingManager();
         bool initialize();
         void drawMap(Map *map);
         void clearScene();
