@@ -66,7 +66,8 @@ int main(int argc, char *argv[]) {
         }
 
         if (player.isAlive()) {
-            if (SDL_GetTicks() - playerUpdateTime == 250) {
+            // update player if still alive
+            if (SDL_GetTicks() - playerUpdateTime == 200) {
                 player.update(&map);
                 playerUpdateTime = SDL_GetTicks();
                 if (!player.isAlive()) {
@@ -74,6 +75,7 @@ int main(int argc, char *argv[]) {
                 }
             }
         } else {
+            // freeze player before respawning
             if (SDL_GetTicks() - deadTime == 1500) {
                 if (player.getLives() > 0) {
                     player.respawn(&map);
@@ -86,19 +88,22 @@ int main(int argc, char *argv[]) {
 
         if (SDL_GetTicks() - drawTime == 50) {
             SDL_Color white = {255, 255, 255, 255};
+            SDL_Color green = {128, 168, 50, 255};
 
             drawingManager.clearScene();
 
             drawingManager.drawMap(&map);
 
+            std::string points = std::to_string(player.getPoints());
+            drawingManager.renderText(points.c_str(), 0, SCREEN_HEIGHT - 15, FONTSIZE_SMALL, green);
+
             if (!player.isAlive()) {
                 if (player.getLives() > 0) {
-                    drawingManager.renderText("YOU DIED", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 15, white, true);
-                    std::string lives = "LIVES: ";
-                    lives.push_back(player.getLives()+'0');
-                    drawingManager.renderText(lives.c_str(), SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15, white, true);
+                    drawingManager.renderText("YOU DIED", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 15, FONTSIZE_LARGE, white, true);
+                    std::string lives = "LIVES: " + std::to_string(player.getLives());
+                    drawingManager.renderText(lives.c_str(), SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15, FONTSIZE_LARGE, white, true);
                 } else {
-                    drawingManager.renderText("GAME OVER", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, white, true);
+                    drawingManager.renderText("GAME OVER", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, FONTSIZE_LARGE, white, true);
                 }
             }
 

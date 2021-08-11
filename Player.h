@@ -13,6 +13,7 @@ class Player {
         position_t body[MAX_LENGTH] = {0,0};
         position_t *head = body;
         bool alive;
+        unsigned int points;
         
         SDL_Texture *texture;
     public:
@@ -22,6 +23,7 @@ class Player {
         int getY() { return head->y; }
         int getLength() { return length; }
         int getLives() { return lives; }
+        int getPoints() { return points; }
         position_t* getPos(int i);
         void setX(const int x) { head->x = x; }
         void setY(const int y) { head->y = y; }

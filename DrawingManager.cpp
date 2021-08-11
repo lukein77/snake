@@ -34,7 +34,9 @@ bool DrawingManager::initialize() {
 		printf("Failed to initialize SDL_ttf: %s\n", TTF_GetError());
 		return false;
 	} else {
-		font = TTF_OpenFont("PressStart2P.ttf", 18);
+		fonts[FONTSIZE_DEFAULT] = TTF_OpenFont("PressStart2P.ttf", 15);
+        fonts[FONTSIZE_SMALL] = TTF_OpenFont("PressStart2P.ttf", 12);
+        fonts[FONTSIZE_LARGE] = TTF_OpenFont("PressStart2P.ttf", 18);
 	}
     
     return true;
@@ -81,9 +83,9 @@ void DrawingManager::blit(Texture *texture, int x, int y) {
 	SDL_RenderCopy(renderer, texture->image, NULL, &(texture->rect));
 }
 
-void DrawingManager::renderText(const char *text, int x, int y, SDL_Color color, bool centered) {
+void DrawingManager::renderText(const char *text, int x, int y, int size, SDL_Color color, bool centered) {
 
-	SDL_Surface *surface = TTF_RenderText_Solid(font, text, color);
+	SDL_Surface *surface = TTF_RenderText_Solid(fonts[size], text, color);
 
 	if (surface) {
 		Texture texture;

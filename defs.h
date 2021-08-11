@@ -14,12 +14,17 @@
 #define INITIAL_LENGTH 3
 #define MAX_LENGTH 255
 
-#define FONTSIZE_DEFAULT 18
+enum FontSize {
+    FONTSIZE_DEFAULT,
+    FONTSIZE_SMALL,
+    FONTSIZE_LARGE
+};
 
 enum MapTile {
     MAP_EMPTY,
     MAP_SNAKE,
-    MAP_FOOD
+    MAP_FOOD,
+    MAP_WALL
 };
 
 enum {

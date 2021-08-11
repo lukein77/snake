@@ -1,6 +1,6 @@
 #include "Player.h"
 
-Player::Player() : length(3), direction(DIR_RIGHT), lives(3), alive(true) {
+Player::Player() : length(3), direction(DIR_RIGHT), lives(3), alive(true), points(0) {
     head->x = 10;
     head->y = 10;
 }
@@ -37,14 +37,14 @@ void Player::update(Map *map) {
             break;
     }
     // now check if the movement was actually valid
-    if (map->getTile(head->x, head->y) != MAP_SNAKE) {
+    if ((map->getTile(head->x, head->y) != MAP_SNAKE) && (map->getTile(head->x, head->y) != MAP_WALL)) {
         if (map->getTile(head->x, head->y) == MAP_FOOD) {
             grow();
             map->putFood();
         }
         map->setTile(head->x, head->y, MAP_SNAKE);
     } else {
-        // the snake crashed into itself
+        // the snake crashed into itself or against a wall
         alive = false;
         lives--;
         printf("YOU'RE DEAD, lives: %d\n", lives);
@@ -56,8 +56,10 @@ position_t *Player::getPos(int i) {
 }
 
 void Player::grow() {
+    // increase snake's length
     if (length < MAX_LENGTH) length++;
     body[length-1] = body[length-2];
+    points++;
 }
 
 void Player::setDirection(const int dir) {

@@ -10,7 +10,7 @@ class DrawingManager {
     private:
         SDL_Renderer *renderer;
         SDL_Window *window;
-        TTF_Font *font;
+        TTF_Font *fonts[3];
     public:
         DrawingManager();
         ~DrawingManager();
@@ -19,7 +19,7 @@ class DrawingManager {
         void clearScene();
         void renderScene();
         void blit(Texture *texture, int x, int y);
-        void renderText(const char *text, int x, int y, SDL_Color color, bool centered=false);
+        void renderText(const char *text, int x, int y, int size, SDL_Color color, bool centered=false);
 };
 
 #endif
