@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
         }
 
         framesPassed++;
-        if (framesPassed % 8 == 0) { 
+        if (framesPassed % 6 == 0) { 
             updatePlayer = true;
         }
 

@@ -34,9 +34,9 @@ bool DrawingManager::initialize() {
 		printf("Failed to initialize SDL_ttf: %s\n", TTF_GetError());
 		return false;
 	} else {
-		fonts[FONTSIZE_DEFAULT] = TTF_OpenFont("PressStart2P.ttf", 15);
-        fonts[FONTSIZE_SMALL] = TTF_OpenFont("PressStart2P.ttf", 12);
-        fonts[FONTSIZE_LARGE] = TTF_OpenFont("PressStart2P.ttf", 18);
+		fonts[FONTSIZE_DEFAULT] = TTF_OpenFont("data/PressStart2P.ttf", 15);
+        fonts[FONTSIZE_SMALL] = TTF_OpenFont("data/PressStart2P.ttf", 12);
+        fonts[FONTSIZE_LARGE] = TTF_OpenFont("data/PressStart2P.ttf", 18);
 	}
     
     return true;
