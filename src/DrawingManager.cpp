@@ -34,33 +34,46 @@ bool DrawingManager::initialize() {
 		printf("Failed to initialize SDL_ttf: %s\n", TTF_GetError());
 		return false;
 	} else {
-		fonts[FONTSIZE_DEFAULT] = TTF_OpenFont("PressStart2P.ttf", 15);
-        fonts[FONTSIZE_SMALL] = TTF_OpenFont("PressStart2P.ttf", 12);
-        fonts[FONTSIZE_LARGE] = TTF_OpenFont("PressStart2P.ttf", 18);
+		fonts[FONTSIZE_DEFAULT] = TTF_OpenFont("data/PressStart2P.ttf", 15);
+        fonts[FONTSIZE_SMALL] = TTF_OpenFont("data/PressStart2P.ttf", 12);
+        fonts[FONTSIZE_LARGE] = TTF_OpenFont("data/PressStart2P.ttf", 18);
 	}
     
     return true;
 }
 
 void DrawingManager::drawMap(Map *map) {
-    // draw the map
     SDL_Rect r;
     r.w = TILE_SIZE;
     r.h = TILE_SIZE;
-    for (int i = 0; i < MAP_WIDTH; i++) {
-        for (int j = 0; j < MAP_HEIGHT; j++) {
-            MapTile tile = map->getTile(i, j);
-            if (tile != MAP_EMPTY) {
-                r.x = i * TILE_SIZE;
-                r.y = j * TILE_SIZE;
-                if (tile == MAP_SNAKE) {
-                    SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0x00);
-                } else if (tile == MAP_FOOD) {
-                    SDL_SetRenderDrawColor(renderer, 0x00, 0xFF, 0x00, 0x00);
-                }
-                SDL_RenderFillRect(renderer, &r);
-            }
-        }
+
+    // draw walls
+    SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0xFF, 0x00);
+    std::vector<position_t> &obstacles = map->getObstacles();
+    for (auto &p : obstacles) {
+        r.x = p.x * TILE_SIZE;
+        r.y = p.y * TILE_SIZE;
+        SDL_RenderFillRect(renderer, &r);
+    }
+
+    // draw food
+    SDL_SetRenderDrawColor(renderer, 0x00, 0xFF, 0x00, 0x00);
+    position_t &food = map->getFood();
+    r.x = food.x * TILE_SIZE;
+    r.y = food.y * TILE_SIZE;
+    SDL_RenderFillRect(renderer, &r);
+}
+
+void DrawingManager::drawPlayer(std::list<position_t> &body) {
+    // draw snake
+    SDL_Rect r;
+    r.w = TILE_SIZE;
+    r.h = TILE_SIZE;
+    SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0x00);
+    for (auto &p : body) {
+        r.x = p.x * TILE_SIZE;
+        r.y = p.y * TILE_SIZE;
+        SDL_RenderFillRect(renderer, &r);
     }
 }
 

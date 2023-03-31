@@ -9,10 +9,12 @@
 
 #define MAP_WIDTH 40
 #define MAP_HEIGHT 30
+#define MAX_OBSTACLES 256
 
 #define INITIAL_POS {10,10}
 #define INITIAL_LENGTH 3
 #define MAX_LENGTH 255
+
 
 enum FontSize {
     FONTSIZE_DEFAULT,
@@ -37,6 +39,8 @@ enum {
 typedef struct position_t {
     int x;
     int y;
+    position_t(){}
+    position_t(int x, int y) : x(x), y(y) {}
 } position_t;
 
 typedef struct Texture {

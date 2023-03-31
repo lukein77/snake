@@ -5,6 +5,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include "Map.h"
+#include <list>
 
 class DrawingManager {
     private:
@@ -16,6 +17,7 @@ class DrawingManager {
         ~DrawingManager();
         bool initialize();
         void drawMap(Map *map);
+        void drawPlayer(std::list<position_t> &body);
         void clearScene();
         void renderScene();
         void blit(Texture *texture, int x, int y);
