@@ -22,6 +22,8 @@ int main(int argc, char *argv[]) {
     Map map;
     SDL_Event event;
 
+    player.setTexture(drawingManager.loadTexture("white.png"));
+
     map.setTile(player.getX(), player.getY(), MAP_SNAKE);
     map.putFood();
 

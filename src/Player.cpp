@@ -73,6 +73,11 @@ void Player::setDirection(const int dir) {
     }
 }
 
+void Player::setTexture(Texture *texture) {
+    this->texture = *texture;
+}
+
+
 void Player::respawn(Map *map) {
     map->reset();
     length = INITIAL_LENGTH;

@@ -15,7 +15,7 @@ class Player {
         bool alive;
         unsigned int points;
         
-        SDL_Texture *texture;
+        Texture texture;
     public:
         Player();
         ~Player() {}
@@ -24,10 +24,14 @@ class Player {
         int getLength() { return length; }
         int getLives() { return lives; }
         int getPoints() { return points; }
+        Texture *getTexture() { return &texture; }
         position_t* getPos(int i);
+
         void setX(const int x) { head->x = x; }
         void setY(const int y) { head->y = y; }
         void setDirection(const int dir);
+        void setTexture(Texture *texture);
+
         void update(Map *map);
         void grow();
         void respawn(Map *map);
