@@ -1,30 +1,39 @@
 #include "Map.h"
 #include <cstdlib>
+#include <cstdio>
 #include <ctime>
 
-bool Map::setTile(int x, int y, MapTile val) {
-    if ((x >= 0 && x < MAP_WIDTH) && (y >= 0 && y < MAP_HEIGHT)) {
-        map[x][y] = val;
-        return true;
+Map::Map() {
+    initialize();
+}
+
+void Map::initialize() {
+    putFood();
+}
+
+bool Map::isWall(position_t pos) {
+    int length = obstacles.size();
+    for (int i = 0; i < length; i++) {
+        if (pos.x == obstacles.at(i).x && pos.y == obstacles.at(i).y) {
+            printf("Crashed with itself\n");
+            return true;
+        } 
     }
     return false;
 }
 
-void Map::putFood() {
-    srand(time(NULL));
-    int x, y;
-    do {
-        x = rand() % MAP_WIDTH;
-        y = rand() % MAP_HEIGHT;
-    } while (map[x][y] != MAP_EMPTY);
-    map[x][y] = MAP_FOOD;
+bool Map::isFood(position_t pos)
+{
+    return (pos.x == food.x && pos.y == food.y);
 }
 
-void Map::reset() {
-    for (int i = 0; i < MAP_WIDTH; i++) {
-        for (int j = 0; j < MAP_HEIGHT; j++) {
-            map[i][j] = MAP_EMPTY;
-        }
-    }
-    putFood();
+void Map::putFood()
+{
+    srand(time(NULL));
+    position_t new_food;
+    do {
+        new_food.x = rand() % MAP_WIDTH;
+        new_food.y = rand() % MAP_HEIGHT;
+    } while (isWall(new_food));
+    this->food = new_food;
 }

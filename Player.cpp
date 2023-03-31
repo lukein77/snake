@@ -1,65 +1,54 @@
 #include "Player.h"
 
-Player::Player() : length(3), direction(DIR_RIGHT), lives(3), alive(true), points(0) {
-    head->x = 10;
-    head->y = 10;
+Player::Player() : direction(DIR_RIGHT), lives(3), alive(true), points(0) {
+    initialize();
 }
 
 void Player::update(Map *map) {
-    // update map tiles for the head and tail, no need to update the rest of the body
-    position_t tail = body[length-1];
-    map->setTile(tail.x, tail.y, MAP_EMPTY);
+    position_t head = body.front();
+    position_t new_head = {head.x, head.y};
     
-    // first move the body
-    for (int i = length-1; i > 0; i--) {
-        body[i] = body[i-1]; 
-    }
-    // then move the head
+    // first calculate the snake's next position
     switch (direction) {
         case DIR_UP:
-            head->y--;
-            if (head->y == -1) head->y = MAP_HEIGHT - 1;
+            new_head.y--;
+            if (new_head.y == -1) new_head.y = MAP_HEIGHT - 1;
             break;
         
         case DIR_DOWN:
-            head->y++;
-            if (head->y == MAP_HEIGHT) head->y = 0;
+            new_head.y++;
+            if (new_head.y == MAP_HEIGHT) new_head.y = 0;
             break;
 
         case DIR_LEFT:
-            head->x--;
-            if (head->x == -1) head->x = MAP_WIDTH - 1;
+            new_head.x--;
+            if (new_head.x == -1) new_head.x = MAP_WIDTH - 1;
             break;
 
         case DIR_RIGHT:
-            head->x++;
-            if (head->x == MAP_WIDTH) head->x = 0;
+            new_head.x++;
+            if (new_head.x == MAP_WIDTH) new_head.x = 0;
             break;
     }
-    // now check if the movement was actually valid
-    if ((map->getTile(head->x, head->y) != MAP_SNAKE) && (map->getTile(head->x, head->y) != MAP_WALL)) {
-        if (map->getTile(head->x, head->y) == MAP_FOOD) {
-            grow();
-            map->putFood();
-        }
-        map->setTile(head->x, head->y, MAP_SNAKE);
-    } else {
+
+    // now check against obstacles or food
+    if ((map->isWall(new_head)) || (isSnake(new_head))) {
+        printf("CRASH! head(x,y): %d,%d\n", new_head.x, new_head.y);
         // the snake crashed into itself or against a wall
         alive = false;
         lives--;
         printf("YOU'RE DEAD, lives: %d\n", lives);
     }
-}
+    else {
+        body.push_front(new_head);
+        if ((map->isFood(new_head))) {
+            points++;
+            map->putFood();
+        } else {
+            body.pop_back();    // only remove tail if did not eat food
+        }
+    }
 
-position_t *Player::getPos(int i) {
-    return (&body[i]);
-}
-
-void Player::grow() {
-    // increase snake's length
-    if (length < MAX_LENGTH) length++;
-    body[length-1] = body[length-2];
-    points++;
 }
 
 void Player::setDirection(const int dir) {
@@ -74,8 +63,25 @@ void Player::setDirection(const int dir) {
 }
 
 void Player::respawn(Map *map) {
-    map->reset();
-    length = INITIAL_LENGTH;
-    *head = INITIAL_POS;
+    map->initialize();
     alive = true;
+}
+
+void Player::initialize() {
+    position_t p1 = {20, 20};
+    position_t p2 = {20, 21};
+    position_t p3 = {20, 22};
+    body.push_back(p1);
+    body.push_back(p2);
+    body.push_back(p3);
+}
+
+bool Player::isSnake(position_t pos) {
+    /*for (auto &p : body) {
+        if (pos.x == p.x && pos.y && p.y) {
+            printf("Crashed with itself\n");
+            return true;
+        }
+    }*/
+    return false;
 }

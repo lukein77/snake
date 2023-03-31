@@ -2,17 +2,28 @@
 #define _MAP_H_DEFINED_
 
 #include "defs.h"
+#include <vector>
+
+struct Tile {
+    int x;
+    int y;
+    MapTile type;
+};
 
 class Map {
     private:
-        MapTile map[MAP_WIDTH][MAP_HEIGHT] = {MAP_EMPTY};
+        std::vector<position_t> obstacles;
+        position_t food;
+
     public:
-        Map() {}
+        Map();
         ~Map() {}
-        MapTile getTile(const int x, const int y) { return map[x][y]; }
-        bool setTile(int x, int y, MapTile val);
+        bool isWall(position_t pos);
+        bool isFood(position_t pos);
         void putFood();
-        void reset();
+        void initialize();
+        std::vector<position_t> &getObstacles() { return obstacles; }
+        position_t &getFood() { return food; }
 };
 
 #endif

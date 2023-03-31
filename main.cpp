@@ -21,15 +21,16 @@ int main(int argc, char *argv[]) {
     Player player;
     Map map;
     SDL_Event event;
-
-    map.setTile(player.getX(), player.getY(), MAP_SNAKE);
     map.putFood();
 
-    long playerUpdateTime = SDL_GetTicks();
-    long drawTime = SDL_GetTicks();
+    bool updatePlayer = true;
     long deadTime = SDL_GetTicks();
 
+    long framesPassed = 0;
+
     while (running) {
+        
+        Uint64 start = SDL_GetTicks64();
 
         // events
         while (SDL_PollEvent(&event)) {
@@ -54,9 +55,9 @@ int main(int argc, char *argv[]) {
                         case SDL_SCANCODE_RIGHT:
                             player.setDirection(DIR_RIGHT);
                             break;
-                        case SDL_SCANCODE_LCTRL:
+                        /*case SDL_SCANCODE_LCTRL:
                             player.grow();
-                            break;
+                            break;*/
                         default:
                             break;
                     }
@@ -64,55 +65,58 @@ int main(int argc, char *argv[]) {
                     break;
             }
         }
-
         if (player.isAlive()) {
+            if (updatePlayer) {
             // update player if still alive
-            if (SDL_GetTicks() - playerUpdateTime == 200) {
                 player.update(&map);
-                playerUpdateTime = SDL_GetTicks();
                 if (!player.isAlive()) {
                     deadTime = SDL_GetTicks();
                 }
             }
+            updatePlayer = false;
         } else {
             // freeze player before respawning
             if (SDL_GetTicks() - deadTime == 1500) {
                 if (player.getLives() > 0) {
                     player.respawn(&map);
-                    playerUpdateTime = SDL_GetTicks();
                 } else {
                     running = false;
                 }
             }
         }
+        SDL_Color white = {255, 255, 255, 255};
+        SDL_Color green = {128, 168, 50, 255};
 
-        if (SDL_GetTicks() - drawTime == 50) {
-            SDL_Color white = {255, 255, 255, 255};
-            SDL_Color green = {128, 168, 50, 255};
+        drawingManager.clearScene();
 
-            drawingManager.clearScene();
+        drawingManager.drawMap(&map);
+        drawingManager.drawPlayer(player.getBody());
 
-            drawingManager.drawMap(&map);
+        std::string points = std::to_string(player.getPoints());
+        drawingManager.renderText(points.c_str(), 0, SCREEN_HEIGHT - 15, FONTSIZE_SMALL, green);
 
-            std::string points = std::to_string(player.getPoints());
-            drawingManager.renderText(points.c_str(), 0, SCREEN_HEIGHT - 15, FONTSIZE_SMALL, green);
-
-            if (!player.isAlive()) {
-                if (player.getLives() > 0) {
-                    drawingManager.renderText("YOU DIED", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 15, FONTSIZE_LARGE, white, true);
-                    std::string lives = "LIVES: " + std::to_string(player.getLives());
-                    drawingManager.renderText(lives.c_str(), SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15, FONTSIZE_LARGE, white, true);
-                } else {
-                    drawingManager.renderText("GAME OVER", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, FONTSIZE_LARGE, white, true);
-                }
+        if (!player.isAlive()) {
+            if (player.getLives() > 0) {
+                drawingManager.renderText("YOU DIED", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 15, FONTSIZE_LARGE, white, true);
+                std::string lives = "LIVES: " + std::to_string(player.getLives());
+                drawingManager.renderText(lives.c_str(), SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 15, FONTSIZE_LARGE, white, true);
+            } else {
+                drawingManager.renderText("GAME OVER", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, FONTSIZE_LARGE, white, true);
             }
+        }
+        drawingManager.renderScene();
 
-            drawingManager.renderScene();
-            drawTime = SDL_GetTicks();
+        Uint64 timePassed = SDL_GetTicks64() - start;
+        if (timePassed < 1000 / 60.0) {
+            SDL_Delay(1000 / 60.0 - timePassed);
+        }
+
+        framesPassed++;
+        if (framesPassed % 8 == 0) { 
+            updatePlayer = true;
         }
 
     }
-
     
     SDL_Quit();
     return 0;

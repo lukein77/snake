@@ -3,15 +3,15 @@
 
 #include "SDL2/SDL.h"
 #include "defs.h"
+#include <list>
 #include "Map.h"
 
 class Player {
     private:
-        int length;
         int direction;
         int lives;
-        position_t body[MAX_LENGTH] = {0,0};
-        position_t *head = body;
+        
+        std::list<position_t> body;
         bool alive;
         unsigned int points;
         
@@ -19,19 +19,16 @@ class Player {
     public:
         Player();
         ~Player() {}
-        int getX() { return head->x; }
-        int getY() { return head->y; }
-        int getLength() { return length; }
+        int getLength() { return body.size(); }
         int getLives() { return lives; }
         int getPoints() { return points; }
-        position_t* getPos(int i);
-        void setX(const int x) { head->x = x; }
-        void setY(const int y) { head->y = y; }
         void setDirection(const int dir);
         void update(Map *map);
-        void grow();
         void respawn(Map *map);
+        void initialize();
         bool isAlive() { return alive; }
+        bool isSnake(position_t pos);
+        std::list<position_t> &getBody() { return body; }
 };
 
 #endif
