@@ -4,12 +4,6 @@
 #include "defs.h"
 #include <vector>
 
-struct Tile {
-    int x;
-    int y;
-    MapTile type;
-};
-
 class Map {
     private:
         std::vector<position_t> obstacles;

@@ -39,6 +39,8 @@ enum {
 typedef struct position_t {
     int x;
     int y;
+    position_t(){}
+    position_t(int x, int y) : x(x), y(y) {}
 } position_t;
 
 typedef struct Texture {

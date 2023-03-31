@@ -76,12 +76,11 @@ int main(int argc, char *argv[]) {
             updatePlayer = false;
         } else {
             // freeze player before respawning
-            if (SDL_GetTicks() - deadTime == 1500) {
-                if (player.getLives() > 0) {
-                    player.respawn(&map);
-                } else {
-                    running = false;
-                }
+            SDL_Delay(1500);
+            if (player.getLives() > 0) {
+                player.respawn(&map);
+            } else {
+                running = false;
             }
         }
         SDL_Color white = {255, 255, 255, 255};

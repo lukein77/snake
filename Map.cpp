@@ -15,7 +15,6 @@ bool Map::isWall(position_t pos) {
     int length = obstacles.size();
     for (int i = 0; i < length; i++) {
         if (pos.x == obstacles.at(i).x && pos.y == obstacles.at(i).y) {
-            printf("Crashed with itself\n");
             return true;
         } 
     }

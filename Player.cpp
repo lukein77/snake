@@ -33,7 +33,6 @@ void Player::update(Map *map) {
 
     // now check against obstacles or food
     if ((map->isWall(new_head)) || (isSnake(new_head))) {
-        printf("CRASH! head(x,y): %d,%d\n", new_head.x, new_head.y);
         // the snake crashed into itself or against a wall
         alive = false;
         lives--;
@@ -64,24 +63,22 @@ void Player::setDirection(const int dir) {
 
 void Player::respawn(Map *map) {
     map->initialize();
+    this->initialize();
     alive = true;
 }
 
 void Player::initialize() {
-    position_t p1 = {20, 20};
-    position_t p2 = {20, 21};
-    position_t p3 = {20, 22};
-    body.push_back(p1);
-    body.push_back(p2);
-    body.push_back(p3);
+    body.clear();
+    body.emplace_back(20,20);
+    body.emplace_back(20,21);
+    body.emplace_back(20,22);
 }
 
 bool Player::isSnake(position_t pos) {
-    /*for (auto &p : body) {
-        if (pos.x == p.x && pos.y && p.y) {
-            printf("Crashed with itself\n");
+    for (auto &p : body) {
+        if ((pos.x == p.x) && (pos.y == p.y)) {
             return true;
         }
-    }*/
+    }
     return false;
 }
